@@ -1,6 +1,10 @@
 import * as functions from 'firebase-functions';
+import admin = require('firebase-admin');
 
-export const helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info("Hello logs!", {structuredData: true});
-  response.send("Hello from Firebase!");
+admin.initializeApp(functions.config().firebase);
+
+exports.addGratitude = functions.https.onRequest(async (req, res) => {
+    const gratitude = req.query.text;
+    const writeResult = await admin.firestore().collection('gratitudes').add({gratitude: gratitude});
+    res.json({result: `Gratitude with ID: ${writeResult.id} added.`});
 });
